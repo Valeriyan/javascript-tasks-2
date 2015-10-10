@@ -13,33 +13,33 @@ function isPhoneValid(phone) {
         return false;
     }
 
-    var intracityNumberLength = 7;
+    var intraCityNumberLength = 7;
 
-    for (var i = phone.length - 1; i >= phone.length - intracityNumberLength; i--) {
+    for (var i = phone.length - 1; i >= phone.length - intraCityNumberLength; i--) {
         if (!/[0-9]/.test(phone[i])) {
             if (phone[i] !== '-' || i !== phone.length - 4 && i !== phone.length - 6) {
                 return false;
             } else {
-                intracityNumberLength++;
+                intraCityNumberLength++;
             }
         }
     }
-    if (!(intracityNumberLength == 9 || intracityNumberLength == 7)) {
+    if (!(intraCityNumberLength == 9 || intraCityNumberLength == 7)) {
         return false;
     }
 
     var cityCodeLength = 3;
-    var endOfCityCode = phone.length - intracityNumberLength - 1;
-    var beginOfCityCode = endOfCityCode - cityCodeLength;
+    var cityCodeLastIndex = phone.length - intraCityNumberLength - 1;
+    var cityCodeFirstIndex = cityCodeLastIndex - cityCodeLength;
 
-    if (!/[0-9]{3}/.test(phone.substring(beginOfCityCode + 1, endOfCityCode + 1))) {
-        if (/^\([0-9]{3}\)$/.test(phone.substring(beginOfCityCode - 1, endOfCityCode + 1))) {
+    if (!/[0-9]{3}/.test(phone.substring(cityCodeFirstIndex + 1, cityCodeLastIndex + 1))) {
+        if (/^\([0-9]{3}\)$/.test(phone.substring(cityCodeFirstIndex - 1, cityCodeLastIndex + 1))) {
             cityCodeLength += 2;
         } else {
             return false;
         }
     }
-    for (var i = endOfCityCode - cityCodeLength; i >= 0; i--) {
+    for (i = cityCodeLastIndex - cityCodeLength; i >= 0; i--) {
         if (!/[0-9]/.test(phone[i])) {
             if (phone[i] !== '+' || i !== 0) {
                 return false;
@@ -57,10 +57,11 @@ function isEmailValid(email) {
 }
 
 function formatPhone(phone) {
-    phone = phone.replace(/\+|,|-|\)|\(|\s/g, '');
+    phone = phone.replace(/[\+\)\(\s,-]/g, '');
 
     var intraCityNumber = phone.substr(phone.length - 7, phone.length - 1);
-    var cityCode = phone.substr(phone.length - intraCityNumber.length - 3, phone.length - intraCityNumber.length - 1);
+    var cityCodeLastIndex = phone.length - intraCityNumber.length;
+    var cityCode = phone.substr(cityCodeLastIndex - 3, cityCodeLastIndex - 1);
     var countryCode = phone.substr(0, phone.length - intraCityNumber.length - cityCode.length - 1);
 
     if (countryCode === '') {
@@ -147,9 +148,8 @@ module.exports.importFromCsv = function importFromCsv(filename) {
     // - Добавляете каждую запись в книгу
     data = data.split(/[;\r\n]+/g);
     for (var i = 0; i < data.length; i += 3) {
-        this.add(data[i], data[i+1], data[i+2]);
+        this.add(data[i], data[i + 1], data[i + 2]);
     }
-    var c;
 };
 
 /*
