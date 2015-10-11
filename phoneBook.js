@@ -4,7 +4,7 @@ var phoneBook = { // Здесь вы храните записи как хоти
     stringRecords: []
 };
 
-function isPhoneValid(phone) {
+function validatePhone(phone) {
     if (typeof phone === 'undefined') {
         return false;
     }
@@ -40,7 +40,7 @@ function isPhoneValid(phone) {
     return /^(\+)?[0-9]+$/.test(phone.substr(0, cityCodeLastIndex - cityCodeLength + 1));
 }
 
-function isEmailValid(email) {
+function validateEmail(email) {
     if (typeof email === 'undefined') {
         return false;
     }
@@ -61,17 +61,13 @@ function formatPhone(phone) {
     return '+' + countryCode + cityCode + intraCityNumber;
 }
 
-function findMatchingRecords (query){
+function findMatchingRecords(query) {
     var results = [];
 
-    if (typeof query === 'undefined') {
-        return phoneBook.records;
-    }
     for (var i = 0; i < phoneBook.records.length; i++) {
         for (var j in phoneBook.records[i]) {
             if (phoneBook.records[i][j].toLowerCase().indexOf(query.toLowerCase()) !== -1) {
-                results.push(phoneBook.stringRecords[i]);
-                console.log(phoneBook.stringRecords[i]);
+                results.push(i);
                 break;
             }
         }
@@ -79,7 +75,7 @@ function findMatchingRecords (query){
     return results;
 }
 
-function phoneRecordToString(phoneRecord) {
+function getPhoneRecordAsString(phoneRecord) {
     return phoneRecord.name + ', ' + phoneRecord.phoneNumber + ', ' + phoneRecord.email;
 }
 /*
@@ -88,7 +84,7 @@ function phoneRecordToString(phoneRecord) {
 */
 module.exports.add = function add(name, phone, email) {
     // Ваша невероятная магия здесь
-    if (!isPhoneValid(phone) || !isEmailValid(email)) {
+    if (!validatePhone(phone) || !validateEmail(email)) {
         return;
     }
 
@@ -102,7 +98,7 @@ module.exports.add = function add(name, phone, email) {
     newPhoneRecord.phoneNumber = formatPhone(phone);
     newPhoneRecord.email = email;
     phoneBook.records.push(newPhoneRecord);
-    phoneBook.stringRecords.push(phoneRecordToString(newPhoneRecord));
+    phoneBook.stringRecords.push(getPhoneRecordAsString(newPhoneRecord));
 };
 
 /*
@@ -111,21 +107,18 @@ module.exports.add = function add(name, phone, email) {
 */
 module.exports.find = function find(query) {
     // Ваша удивительная магия здесь
-    var results = [];
-
     if (typeof query === 'undefined') {
-        return phoneBook.stringRecords;
-    }
-    for (var i = 0; i < phoneBook.records.length; i++) {
-        for (var j in phoneBook.records[i]) {
-            if (phoneBook.records[i][j].toLowerCase().indexOf(query.toLowerCase()) !== -1) {
-                results.push(phoneBook.stringRecords[i]);
-                console.log(phoneBook.stringRecords[i]);
-                break;
-            }
+        for (var i in phoneBook.stringRecords) {
+            console.log(phoneBook.stringRecords[i]);
         }
+        return;
     }
-    return results;
+
+    var matchingRecords = findMatchingRecords(query);
+
+    for (var i in matchingRecords) {
+        console.log(phoneBook.stringRecords[matchingRecords[i]]);
+    }
 };
 
 /*
@@ -133,21 +126,17 @@ module.exports.find = function find(query) {
 */
 module.exports.remove = function remove(query) {
     // Ваша необьяснимая магия здесь
-    var countOfDeletedRecords = 0;
-
     if (typeof query === 'undefined') {
+        return;
     }
-    for (var i = 0; i < phoneBook.records.length; i++) {
-        for (var j in phoneBook.records[i]) {
-            if (phoneBook.records[i][j].toLowerCase().indexOf(query.toLowerCase()) !== -1) {
-                phoneBook.records.splice(i, 1);
-                phoneBook.stringRecords.splice(i, 1);
-                countOfDeletedRecords++;
-                break;
-            }
-        }
+
+    var matchingResults = findMatchingRecords(query);
+
+    for (var i = matchingResults.length - 1; i >= 0; i--) {
+        phoneBook.records.splice(matchingResults[i], 1);
+        phoneBook.stringRecords.splice(matchingResults[i], 1);
     }
-    console.log(countOfDeletedRecords + ' record(s) removed');
+    console.log(matchingResults.length + ' record(s) removed');
 };
 
 /*
