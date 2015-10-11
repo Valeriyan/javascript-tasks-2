@@ -83,11 +83,11 @@ module.exports.add = function add(name, phone, email) {
         return;
     }
 
-    var newPhoneRecord = new Object({
+    var newPhoneRecord = {
         name: '',
         phoneNumber: '',
         email: ''
-    });
+    };
 
     newPhoneRecord.name = name;
     newPhoneRecord.phoneNumber = formatPhone(phone);
@@ -110,7 +110,8 @@ module.exports.find = function find(query) {
     for (var i = 0; i < phoneBook.records.length; i++) {
         for (var j in phoneBook.records[i]) {
             if (phoneBook.records[i][j].toLowerCase().indexOf(query.toLowerCase()) !== -1) {
-                results.push();
+                results.push(phoneBook.stringRecords[i]);
+                console.log(phoneBook.stringRecords[i]);
                 break;
             }
         }
@@ -123,18 +124,21 @@ module.exports.find = function find(query) {
 */
 module.exports.remove = function remove(query) {
     // Ваша необьяснимая магия здесь
+    var countOfDeletedRecords = 0;
+
     if (typeof query === 'undefined') {
-        return;
     }
-    for (var i = 0; i < phoneBook.records.length; i++) {
+    for (var i = 0; i < phoneBook.records.length - countOfDeletedRecords; i++) {
         for (var j in phoneBook.records[i]) {
             if (phoneBook.records[i][j].toLowerCase().indexOf(query.toLowerCase()) !== -1) {
                 phoneBook.records.splice(i, 1);
                 phoneBook.stringRecords.splice(i, 1);
-                return;
+                countOfDeletedRecords++;
+                break;
             }
         }
     }
+    console.log(countOfDeletedRecords + ' record(s) removed');
 };
 
 /*
