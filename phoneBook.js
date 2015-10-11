@@ -15,17 +15,12 @@ function isPhoneValid(phone) {
 
     var intraCityNumberLength = 7;
 
-    for (var i = phone.length - 1; i >= phone.length - intraCityNumberLength; i--) {
-        if (!/[0-9]/.test(phone[i])) {
-            if (phone[i] !== '-' || i !== phone.length - 4 && i !== phone.length - 6) {
-                return false;
-            } else {
-                intraCityNumberLength++;
-            }
+    if (!/[0-9]{7}/.test(phone.substr(phone.length - intraCityNumberLength))) {
+        if (/^[0-9]{3}\-[0-9]\-[0-9]{3}$/.test(phone.substr(phone.length - (intraCityNumberLength + 2)))) {
+            intraCityNumberLength += 2;
+        } else {
+            return false;
         }
-    }
-    if (!(intraCityNumberLength == 9 || intraCityNumberLength == 7)) {
-        return false;
     }
 
     var cityCodeLength = 3;
@@ -39,14 +34,10 @@ function isPhoneValid(phone) {
             return false;
         }
     }
-    for (i = cityCodeLastIndex - cityCodeLength; i >= 0; i--) {
-        if (!/[0-9]/.test(phone[i])) {
-            if (phone[i] !== '+' || i !== 0) {
-                return false;
-            }
-        }
+    if (phone.length - intraCityNumberLength - cityCodeLength === 0) {
+        return true;
     }
-    return true;
+    return /^(\+)?[0-9]+$/.test(phone.substr(0, cityCodeLastIndex - cityCodeLength + 1));
 }
 
 function isEmailValid(email) {
@@ -68,6 +59,24 @@ function formatPhone(phone) {
         countryCode = '7';
     }
     return '+' + countryCode + cityCode + intraCityNumber;
+}
+
+function findMatchingRecords (query){
+    var results = [];
+
+    if (typeof query === 'undefined') {
+        return phoneBook.records;
+    }
+    for (var i = 0; i < phoneBook.records.length; i++) {
+        for (var j in phoneBook.records[i]) {
+            if (phoneBook.records[i][j].toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+                results.push(phoneBook.stringRecords[i]);
+                console.log(phoneBook.stringRecords[i]);
+                break;
+            }
+        }
+    }
+    return results;
 }
 
 function phoneRecordToString(phoneRecord) {
@@ -128,7 +137,7 @@ module.exports.remove = function remove(query) {
 
     if (typeof query === 'undefined') {
     }
-    for (var i = 0; i < phoneBook.records.length - countOfDeletedRecords; i++) {
+    for (var i = 0; i < phoneBook.records.length; i++) {
         for (var j in phoneBook.records[i]) {
             if (phoneBook.records[i][j].toLowerCase().indexOf(query.toLowerCase()) !== -1) {
                 phoneBook.records.splice(i, 1);
