@@ -16,7 +16,7 @@ function validatePhone(phone) {
     var intraCityNumberLength = 7;
 
     if (!/[0-9]{7}/.test(phone.substr(phone.length - intraCityNumberLength))) {
-        if (/^[0-9]{3}\-[0-9]\-[0-9]{3}$/.test(phone.substr(phone.length - (intraCityNumberLength + 2)))) {
+        if (/^[0-9]{3}-[0-9]-[0-9]{3}$/.test(phone.substr(phone.length - (intraCityNumberLength + 2)))) {
             intraCityNumberLength += 2;
         } else {
             return false;
@@ -24,11 +24,10 @@ function validatePhone(phone) {
     }
 
     var cityCodeLength = 3;
-    var cityCodeLastIndex = phone.length - intraCityNumberLength - 1;
-    var cityCodeFirstIndex = cityCodeLastIndex - cityCodeLength;
+    var cityCodeFirstIndex = phone.length - intraCityNumberLength - 1 - cityCodeLength;
 
-    if (!/[0-9]{3}/.test(phone.substring(cityCodeFirstIndex + 1, cityCodeLastIndex + 1))) {
-        if (/^\([0-9]{3}\)$/.test(phone.substring(cityCodeFirstIndex - 1, cityCodeLastIndex + 1))) {
+    if (!/[0-9]{3}/.test(phone.substr(cityCodeFirstIndex + 1, 3))) {
+        if (/^\([0-9]{3}\)$/.test(phone.substr(cityCodeFirstIndex - 1, 5))) {
             cityCodeLength += 2;
         } else {
             return false;
@@ -37,7 +36,7 @@ function validatePhone(phone) {
     if (phone.length - intraCityNumberLength - cityCodeLength === 0) {
         return true;
     }
-    return /^(\+)?[0-9]+$/.test(phone.substr(0, cityCodeLastIndex - cityCodeLength + 1));
+    return /^(\+)?[0-9]+$/.test(phone.substr(0, phone.length - intraCityNumberLength - cityCodeLength));
 }
 
 function validateEmail(email) {
@@ -50,10 +49,9 @@ function validateEmail(email) {
 function formatPhone(phone) {
     phone = phone.replace(/[\+\)\(\s,-]/g, '');
 
-    var intraCityNumber = phone.substr(phone.length - 7, phone.length - 1);
-    var cityCodeLastIndex = phone.length - intraCityNumber.length;
-    var cityCode = phone.substr(cityCodeLastIndex - 3, cityCodeLastIndex - 1);
-    var countryCode = phone.substr(0, phone.length - intraCityNumber.length - cityCode.length - 1);
+    var intraCityNumber = phone.substr(phone.length - 7);
+    var cityCode = phone.substr(phone.length - intraCityNumber.length - 3, 3);
+    var countryCode = phone.substr(0, phone.length - intraCityNumber.length - cityCode.length);
 
     if (countryCode === '') {
         countryCode = '7';
