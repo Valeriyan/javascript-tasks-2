@@ -63,8 +63,11 @@ function findMatchingRecords(query) {
     var results = [];
 
     for (var i = 0; i < phoneBook.records.length; i++) {
-        for (var j in phoneBook.records[i]) {
-            if (phoneBook.records[i][j].toLowerCase().indexOf(query.toLowerCase()) !== -1) {
+
+        var keys = Object.keys(phoneBook.records[i]);
+
+        for (var j = 0; j < keys.length; j++) {
+            if (phoneBook.records[i][keys[j]].toLowerCase().indexOf(query.toLowerCase()) !== -1) {
                 results.push(i);
                 break;
             }
@@ -87,14 +90,11 @@ module.exports.add = function add(name, phone, email) {
     }
 
     var newPhoneRecord = {
-        name: '',
-        phoneNumber: '',
-        email: ''
+        name: name,
+        phoneNumber: formatPhone(phone),
+        email: email
     };
 
-    newPhoneRecord.name = name;
-    newPhoneRecord.phoneNumber = formatPhone(phone);
-    newPhoneRecord.email = email;
     phoneBook.records.push(newPhoneRecord);
     phoneBook.stringRecords.push(getPhoneRecordAsString(newPhoneRecord));
 };
@@ -106,17 +106,20 @@ module.exports.add = function add(name, phone, email) {
 module.exports.find = function find(query) {
     // Ваша удивительная магия здесь
     if (typeof query === 'undefined') {
-        for (var i in phoneBook.stringRecords) {
+        for (var i = 0; i < phoneBook.stringRecords.length; i++) {
             console.log(phoneBook.stringRecords[i]);
         }
         return;
     }
 
     var matchingRecords = findMatchingRecords(query);
+    var results = [];
 
-    for (var i in matchingRecords) {
+    for (var i = 0; i <  matchingRecords.length; i++) {
         console.log(phoneBook.stringRecords[matchingRecords[i]]);
+        results.push(phoneBook.records[matchingRecords[i]]);
     }
+    return results;
 };
 
 /*
@@ -129,12 +132,15 @@ module.exports.remove = function remove(query) {
     }
 
     var matchingResults = findMatchingRecords(query);
+    var results = [];
 
     for (var i = matchingResults.length - 1; i >= 0; i--) {
+        results.push(phoneBook.records[matchingResults[i]]);
         phoneBook.records.splice(matchingResults[i], 1);
         phoneBook.stringRecords.splice(matchingResults[i], 1);
     }
     console.log(matchingResults.length + ' record(s) removed');
+    return results;
 };
 
 /*
