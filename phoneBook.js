@@ -152,9 +152,10 @@ module.exports.importFromCsv = function importFromCsv(filename) {
     // Ваша чёрная магия:
     // - Разбираете записи из `data`
     // - Добавляете каждую запись в книгу
-    data = data.split(/[;\r\n]+/g);
-    for (var i = 0; i < data.length; i += 3) {
-        this.add(data[i], data[i + 1], data[i + 2]);
+    data = data.split(/[\r\n]+/g);
+    for (var i = 0; i < data.length; i++) {
+        var params = data[i].split(';');
+        this.add(params[0], params[1], params[2]);
     }
 };
 
