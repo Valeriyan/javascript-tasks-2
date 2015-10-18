@@ -5,10 +5,6 @@ var phoneBook = { // Здесь вы храните записи как хоти
 };
 
 function validatePhone(phone) {
-    if (typeof phone === 'undefined') {
-        return false;
-    }
-    phone = phone.replace(/[\s\)\(-]/g, ''); //убираем (,),-,пробелы
     if (!/[0-9]{10}/.test(phone.substr(phone.length-10))) {
         return false; //если последние 10 символов номера не цифры, то невалиден
     }
@@ -16,15 +12,10 @@ function validatePhone(phone) {
 }
 
 function validateEmail(email) {
-    if (typeof email === 'undefined') {
-        return false;
-    }
     return /^[\w.]+@([A-zА-я0-9-]+\.)+([A-zА-я0-9-]+\.?)$/.test(email);
 }
 
 function formatPhone(phone) {
-    phone = phone.replace(/[\+\)\(\s,-]/g, '');
-
     var intraCityNumber = phone.substr(phone.length - 7);
     var cityCode = phone.substr(phone.length - intraCityNumber.length - 3, 3);
     var countryCode = phone.substr(0, phone.length - intraCityNumber.length - cityCode.length);
@@ -61,6 +52,11 @@ function getPhoneRecordAsString(phoneRecord) {
 */
 module.exports.add = function add(name, phone, email) {
     // Ваша невероятная магия здесь
+    if (typeof name !== 'string' || typeof phone !== 'string' || typeof email !== 'string')
+    {
+        return;
+    }
+    phone = phone.replace(/[\s\)\(-]/g, ''); //убираем (,),-,пробелы
     if (!validatePhone(phone) || !validateEmail(email)) {
         return;
     }
@@ -81,11 +77,7 @@ module.exports.add = function add(name, phone, email) {
 */
 module.exports.find = function find(query) {
     // Ваша удивительная магия здесь
-    if (typeof query === 'undefined') {
-        for (var i = 0; i < phoneBook.stringRecords.length; i++) {
-        }
-        return phoneBook.records;
-    }
+    query = query || '';
 
     var matchingRecords = findMatchingRecords(query);
     var foundRecords = [];
@@ -101,7 +93,7 @@ module.exports.find = function find(query) {
 */
 module.exports.remove = function remove(query) {
     // Ваша необьяснимая магия здесь
-    if (typeof query === 'undefined') {
+    if (typeof query !== 'string') {
         return;
     }
 
