@@ -8,35 +8,11 @@ function validatePhone(phone) {
     if (typeof phone === 'undefined') {
         return false;
     }
-    phone = phone.replace(/\s/g, '');
-    if (phone.length < 10) {
-        return false;
+    phone = phone.replace(/[\s\)\(-]/g, ''); //убираем (,),-,пробелы
+    if (!/[0-9]{10}/.test(phone.substr(phone.length-10))) {
+        return false; //если последние 10 символов номера не цифры, то невалиден
     }
-
-    var intraCityNumberLength = 7;
-
-    if (!/[0-9]{7}/.test(phone.substr(phone.length - intraCityNumberLength))) {
-        if (/^[0-9]{3}-[0-9]-[0-9]{3}$/.test(phone.substr(phone.length - (intraCityNumberLength + 2)))) {
-            intraCityNumberLength += 2;
-        } else {
-            return false;
-        }
-    }
-
-    var cityCodeLength = 3;
-    var cityCodeFirstIndex = phone.length - intraCityNumberLength - 1 - cityCodeLength;
-
-    if (!/[0-9]{3}/.test(phone.substr(cityCodeFirstIndex + 1, 3))) {
-        if (/^\([0-9]{3}\)$/.test(phone.substr(cityCodeFirstIndex - 1, 5))) {
-            cityCodeLength += 2;
-        } else {
-            return false;
-        }
-    }
-    if (phone.length - intraCityNumberLength - cityCodeLength === 0) {
-        return true;
-    }
-    return /^(\+)?[0-9]+$/.test(phone.substr(0, phone.length - intraCityNumberLength - cityCodeLength));
+    return /^(\+)?[0-9]+$/.test(phone.substr(0, phone.length - 10));
 }
 
 function validateEmail(email) {
@@ -107,7 +83,6 @@ module.exports.find = function find(query) {
     // Ваша удивительная магия здесь
     if (typeof query === 'undefined') {
         for (var i = 0; i < phoneBook.stringRecords.length; i++) {
-            console.log(phoneBook.stringRecords[i]);
         }
         return phoneBook.records;
     }
@@ -139,7 +114,6 @@ module.exports.remove = function remove(query) {
         phoneBook.records.splice(matchingResults[i], 1);
         phoneBook.stringRecords.splice(matchingResults[i], 1);
     }
-    console.log(matchingResults.length + ' record(s) removed');
     return deletedRecords;
 };
 
