@@ -12,7 +12,7 @@ function validatePhone(phone) {
     if (!/[0-9]{10}/.test(phone.substr(phone.length-10))) {
         return false; //если последние 10 символов номера не цифры, то невалиден
     }
-    return /^(\+)?[0-9]+$/.test(phone.substr(0, phone.length - 10));
+    return /^(\+)?[0-9]*$/.test(phone.substr(0, phone.length - 10));
 }
 
 function validateEmail(email) {
@@ -91,7 +91,6 @@ module.exports.find = function find(query) {
     var foundRecords = [];
 
     for (var i = 0; i <  matchingRecords.length; i++) {
-        console.log(phoneBook.stringRecords[matchingRecords[i]]);
         foundRecords.push(phoneBook.records[matchingRecords[i]]);
     }
     return foundRecords;
